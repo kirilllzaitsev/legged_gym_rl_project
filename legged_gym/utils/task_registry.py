@@ -31,6 +31,7 @@
 import os
 from datetime import datetime
 from typing import Tuple
+from legged_gym.envs.base.base_config import BaseConfig
 import torch
 import numpy as np
 
@@ -101,7 +102,7 @@ class TaskRegistry():
                             headless=args.headless)
         return env, env_cfg
 
-    def make_alg_runner(self, env, name=None, args=None, train_cfg=None, log_root="default") -> Tuple[OnPolicyRunner, LeggedRobotCfgPPO]:
+    def make_alg_runner(self, env, name=None, args=None, train_cfg=None, log_root="default") -> Tuple[OnPolicyRunner, BaseConfig]:
         """ Creates the training algorithm  either from a registered namme or from the provided config file.
 
         Args:

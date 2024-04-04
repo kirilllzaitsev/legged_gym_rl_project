@@ -28,7 +28,7 @@
 #
 # Copyright (c) 2021 ETH Zurich, Nikita Rudin
 
-from legged_gym.envs import AnymalCRoughCfg, AnymalCRoughCfgPPO
+from legged_gym.envs import AnymalCRoughCfg, AnymalCRoughCfgPPO, AnymalCRoughCfgDayDreamer
 
 class AnymalCFlatCfg( AnymalCRoughCfg ):
     class env( AnymalCRoughCfg.env ):
@@ -69,6 +69,21 @@ class AnymalCFlatCfgPPO( AnymalCRoughCfgPPO ):
 
     class runner ( AnymalCRoughCfgPPO.runner):
         run_name = ''
+        experiment_name = 'flat_anymal_c'
+        load_run = -1
+        max_iterations = 300
+
+class AnymalCFlatCfgDayDreamer( AnymalCRoughCfgDayDreamer ):
+    class policy( AnymalCRoughCfgDayDreamer.policy ):
+        actor_hidden_dims = [128, 64, 32]
+        critic_hidden_dims = [128, 64, 32]
+        activation = 'elu' # can be elu, relu, selu, crelu, lrelu, tanh, sigmoid
+
+    class algorithm( AnymalCRoughCfgDayDreamer.algorithm):
+        entropy_coef = 0.01
+
+    class runner ( AnymalCRoughCfgDayDreamer.runner):
+        run_name = 'model_based'
         experiment_name = 'flat_anymal_c'
         load_run = -1
         max_iterations = 300
