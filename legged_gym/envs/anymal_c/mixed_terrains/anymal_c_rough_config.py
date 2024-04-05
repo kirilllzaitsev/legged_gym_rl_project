@@ -112,7 +112,7 @@ class AnymalCRoughCfgDayDreamer( LeggedRobotCfgDayDreamer ):
 # env_cfg
 class UnitreeGo1RoughCfg( LeggedRobotCfg ):
     class env( LeggedRobotCfg.env ):
-        num_envs = 64
+        num_envs = 4096
         num_actions = 12
 
     class terrain( LeggedRobotCfg.terrain ):
@@ -166,8 +166,8 @@ class UnitreeGo1RoughCfg( LeggedRobotCfg ):
 
     class control( LeggedRobotCfg.control ):
         # PD Drive parameters:
-        stiffness = {'HAA': 80., 'HFE': 80., 'KFE': 80.}  # [N*m/rad]
-        damping = {'HAA': 2., 'HFE': 2., 'KFE': 2.}     # [N*m*s/rad]
+        stiffness = {'hip_joint': 80., 'thigh_joint': 80., 'calf_joint': 80.}  # [N*m/rad]
+        damping = {'hip_joint': 2., 'thigh_joint': 2., 'calf_joint': 2.}     # [N*m*s/rad]
         # action scale: target angle = actionScale * action + defaultAngle
         action_scale = 0.5
         # decimation: Number of control action updates @ sim DT per policy DT
