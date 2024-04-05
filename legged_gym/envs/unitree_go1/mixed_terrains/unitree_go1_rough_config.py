@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: Copyright (c) 2021 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: BSD-3-Clause
-# 
+#
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
 #
@@ -35,29 +35,26 @@ from legged_gym.envs.base.legged_robot_config import (
 )
 
 
-
 # env_cfg
-class UnitreeGo1RoughCfg( LeggedRobotCfg ):
-    class env( LeggedRobotCfg.env ):
+class UnitreeGo1RoughCfg(LeggedRobotCfg):
+    class env(LeggedRobotCfg.env):
         num_envs = 4096
         num_actions = 12
 
-    class terrain( LeggedRobotCfg.terrain ):
-        mesh_type = 'trimesh'
+    class terrain(LeggedRobotCfg.terrain):
+        mesh_type = "trimesh"
 
-    class init_state( LeggedRobotCfg.init_state ):
-        pos = [0.0, 0.0, 0.6] # x,y,z [m]
-        default_joint_angles = { # = target angles [rad] when action = 0.0
+    class init_state(LeggedRobotCfg.init_state):
+        pos = [0.0, 0.0, 0.6]  # x,y,z [m]
+        default_joint_angles = {  # = target angles [rad] when action = 0.0
             # "LF_HAA": 0.0,
             # "LH_HAA": 0.0,
             # "RF_HAA": -0.0,
             # "RH_HAA": -0.0,
-
             # "LF_HFE": 0.4,
             # "LH_HFE": -0.4,
             # "RF_HFE": 0.4,
             # "RH_HFE": -0.4,
-
             # "LF_KFE": -0.8,
             # "LH_KFE": 0.8,
             # "RF_KFE": -0.8,
@@ -74,60 +71,69 @@ class UnitreeGo1RoughCfg( LeggedRobotCfg ):
             # "RH_HAA" → "RR_hip_joint"
             # "RH_HFE" → "RR_thigh_joint"
             # "RH_KFE" → "RR_calf_joint"
-            # following the anymal order, create new defaults
             "FL_hip_joint": 0.0,
             "RL_hip_joint": 0.0,
             "FR_hip_joint": -0.0,
             "RR_hip_joint": -0.0,
-
             "FL_thigh_joint": 0.4,
             "RL_thigh_joint": -0.4,
             "FR_thigh_joint": 0.4,
             "RR_thigh_joint": -0.4,
-
             "FL_calf_joint": -0.8,
             "RL_calf_joint": 0.8,
             "FR_calf_joint": -0.8,
             "RR_calf_joint": 0.8,
         }
 
-    class control( LeggedRobotCfg.control ):
+    class control(LeggedRobotCfg.control):
         # PD Drive parameters:
-        stiffness = {'hip_joint': 80., 'thigh_joint': 80., 'calf_joint': 80.}  # [N*m/rad]
-        damping = {'hip_joint': 2., 'thigh_joint': 2., 'calf_joint': 2.}     # [N*m*s/rad]
+        stiffness = {
+            "hip_joint": 80.0,
+            "thigh_joint": 80.0,
+            "calf_joint": 80.0,
+        }  # [N*m/rad]
+        damping = {
+            "hip_joint": 2.0,
+            "thigh_joint": 2.0,
+            "calf_joint": 2.0,
+        }  # [N*m*s/rad]
         # action scale: target angle = actionScale * action + defaultAngle
         action_scale = 0.5
         # decimation: Number of control action updates @ sim DT per policy DT
         decimation = 4
         use_actuator_network = False
-        actuator_net_file = "{LEGGED_GYM_ROOT_DIR}/resources/actuator_nets/anydrive_v3_lstm.pt"
+        actuator_net_file = (
+            "{LEGGED_GYM_ROOT_DIR}/resources/actuator_nets/anydrive_v3_lstm.pt"
+        )
 
-    class asset( LeggedRobotCfg.asset ):
+    class asset(LeggedRobotCfg.asset):
         file = "{LEGGED_GYM_ROOT_DIR}/resources/robots/go1_description/urdf/go1.urdf"
         name = "go1"
         foot_name = "FOOT"
         penalize_contacts_on = ["SHANK", "THIGH"]
         terminate_after_contacts_on = ["base"]
-        self_collisions = 1 # 1 to disable, 0 to enable...bitwise filter
+        self_collisions = 1  # 1 to disable, 0 to enable...bitwise filter
 
-    class domain_rand( LeggedRobotCfg.domain_rand):
+    class domain_rand(LeggedRobotCfg.domain_rand):
         randomize_base_mass = True
-        added_mass_range = [-5., 5.]
-  
-    class rewards( LeggedRobotCfg.rewards ):
+        added_mass_range = [-5.0, 5.0]
+
+    class rewards(LeggedRobotCfg.rewards):
         base_height_target = 0.5
-        max_contact_force = 500.
+        max_contact_force = 500.0
         only_positive_rewards = True
-        class scales( LeggedRobotCfg.rewards.scales ):
+
+        class scales(LeggedRobotCfg.rewards.scales):
             pass
 
+
 # train_cfg
-class UnitreeGo1RoughCfgDayDreamer( LeggedRobotCfgDayDreamer ):
-    class env( LeggedRobotCfg.env ):
+class UnitreeGo1RoughCfgDayDreamer(LeggedRobotCfgDayDreamer):
+    class env(LeggedRobotCfg.env):
         num_envs = 64
         num_actions = 12
 
-    class runner( LeggedRobotCfgDayDreamer.runner ):
-        run_name = 'model_based'
-        experiment_name = 'rough_anymal_c'
+    class runner(LeggedRobotCfgDayDreamer.runner):
+        run_name = "model_based"
+        experiment_name = "rough_anymal_c"
         load_run = -1
