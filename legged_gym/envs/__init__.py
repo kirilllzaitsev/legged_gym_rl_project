@@ -33,7 +33,8 @@ from legged_gym.envs.a1.a1_config import A1RoughCfg, A1RoughCfgPPO
 from .base.legged_robot import LeggedRobot
 from .anymal_c.anymal import Anymal
 from .anymal_c.mixed_terrains.anymal_c_rough_config import AnymalCRoughCfg, AnymalCRoughCfgDayDreamer, AnymalCRoughCfgPPO
-from .anymal_c.flat.anymal_c_flat_config import AnymalCFlatCfg, AnymalCFlatCfgDayDreamer, AnymalCFlatCfgPPO, UnitreeGo1FlatCfg, UnitreeGo1FlatCfgDayDreamer
+from .anymal_c.flat.anymal_c_flat_config import AnymalCFlatCfg, AnymalCFlatCfgDayDreamer, AnymalCFlatCfgPPO
+from .unitree_go1.flat.unitree_go1_flat_config import UnitreeGo1FlatCfg, UnitreeGo1FlatCfgDayDreamer
 from .anymal_b.anymal_b_config import AnymalBRoughCfg, AnymalBRoughCfgPPO
 from .cassie.cassie import Cassie
 from .cassie.cassie_config import CassieRoughCfg, CassieRoughCfgPPO
