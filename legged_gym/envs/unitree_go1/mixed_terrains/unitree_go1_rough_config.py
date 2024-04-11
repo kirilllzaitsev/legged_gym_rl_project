@@ -28,6 +28,8 @@
 #
 # Copyright (c) 2021 ETH Zurich, Nikita Rudin
 
+import math
+
 from legged_gym.envs.base.legged_robot_config import (
     LeggedRobotCfg,
     LeggedRobotCfgDayDreamer,
@@ -45,7 +47,7 @@ class UnitreeGo1RoughCfg(LeggedRobotCfg):
         mesh_type = "trimesh"
 
     class init_state(LeggedRobotCfg.init_state):
-        pos = [0.0, 0.0, 0.6]  # x,y,z [m]
+        pos = [0.0, 0.0, 0.4]  # x,y,z [m]
         default_joint_angles = {  # = target angles [rad] when action = 0.0
             # "LF_HAA": 0.0,
             # "LH_HAA": 0.0,
@@ -75,14 +77,14 @@ class UnitreeGo1RoughCfg(LeggedRobotCfg):
             "RL_hip_joint": 0.0,
             "FR_hip_joint": -0.0,
             "RR_hip_joint": -0.0,
-            "FL_thigh_joint": 0.4,
-            "RL_thigh_joint": -0.4,
-            "FR_thigh_joint": 0.4,
-            "RR_thigh_joint": -0.4,
-            "FL_calf_joint": -0.8,
-            "RL_calf_joint": 0.8,
-            "FR_calf_joint": -0.8,
-            "RR_calf_joint": 0.8,
+            "FL_thigh_joint": math.pi / 6,
+            "RL_thigh_joint": math.pi / 6,
+            "FR_thigh_joint": math.pi / 6,
+            "RR_thigh_joint": math.pi / 6,
+            "FL_calf_joint": -math.pi / 3,
+            "RL_calf_joint": -math.pi / 3,
+            "FR_calf_joint": -math.pi / 3,
+            "RR_calf_joint": -math.pi / 3,
         }
 
     class control(LeggedRobotCfg.control):
@@ -135,5 +137,5 @@ class UnitreeGo1RoughCfgDayDreamer(LeggedRobotCfgDayDreamer):
 
     class runner(LeggedRobotCfgDayDreamer.runner):
         run_name = "model_based"
-        experiment_name = "rough_anymal_c"
+        experiment_name = "rough_unitree_go1"
         load_run = -1
