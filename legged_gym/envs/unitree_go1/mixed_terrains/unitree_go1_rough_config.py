@@ -65,16 +65,8 @@ class UnitreeGo1RoughCfg(LeggedRobotCfg):
 
     class control(LeggedRobotCfg.control):
         # PD Drive parameters:
-        stiffness = {
-            "hip_joint": 20.0,
-            "thigh_joint": 20.0,
-            "calf_joint": 20.0,
-        }  # [N*m/rad]
-        damping = {
-            "hip_joint": 0.5,
-            "thigh_joint": 0.5,
-            "calf_joint": 0.5,
-        }  # [N*m*s/rad]
+        stiffness = {"joint": 20.0}  # [N*m/rad]
+        damping = {"joint": 0.5}  # [N*m*s/rad]
         # action scale: target angle = actionScale * action + defaultAngle
         action_scale = 0.25
         # decimation: Number of control action updates @ sim DT per policy DT
@@ -87,8 +79,8 @@ class UnitreeGo1RoughCfg(LeggedRobotCfg):
     class asset(LeggedRobotCfg.asset):
         file = "{LEGGED_GYM_ROOT_DIR}/resources/robots/go1_description/urdf/go1.urdf"
         name = "go1"
-        foot_name = "FOOT"
-        penalize_contacts_on = ["SHANK", "THIGH"]
+        foot_name = "foot"
+        penalize_contacts_on = ["shank", "thigh"]
         terminate_after_contacts_on = ["base"]
         self_collisions = 1  # 1 to disable, 0 to enable...bitwise filter
 
@@ -119,6 +111,7 @@ class UnitreeGo1RoughCfg(LeggedRobotCfg):
         #     orientation = -5.0
         #     torques = -0.0001
         #     action_rate = -0.01
+        #     dof_pos_limits = -10.0
         soft_dof_pos_limit = 0.9
 
 
