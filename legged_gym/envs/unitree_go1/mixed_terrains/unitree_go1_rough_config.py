@@ -47,60 +47,36 @@ class UnitreeGo1RoughCfg(LeggedRobotCfg):
         mesh_type = "trimesh"
 
     class init_state(LeggedRobotCfg.init_state):
-        pos = [0.0, 0.0, 0.4]  # x,y,z [m]
+        pos = [0.0, 0.0, 0.34]  # x,y,z [m]
         default_joint_angles = {  # = target angles [rad] when action = 0.0
-            # "LF_HAA": 0.0,
-            # "LH_HAA": 0.0,
-            # "RF_HAA": -0.0,
-            # "RH_HAA": -0.0,
-            # "LF_HFE": 0.4,
-            # "LH_HFE": -0.4,
-            # "RF_HFE": 0.4,
-            # "RH_HFE": -0.4,
-            # "LF_KFE": -0.8,
-            # "LH_KFE": 0.8,
-            # "RF_KFE": -0.8,
-            # "RH_KFE": 0.8,
-            # "LF_HAA" → "FL_hip_joint"
-            # "LF_HFE" → "FL_thigh_joint"
-            # "LF_KFE" → "FL_calf_joint"
-            # "RF_HAA" → "FR_hip_joint"
-            # "RF_HFE" → "FR_thigh_joint"
-            # "RF_KFE" → "FR_calf_joint"
-            # "LH_HAA" → "RL_hip_joint"
-            # "LH_HFE" → "RL_thigh_joint"
-            # "LH_KFE" → "RL_calf_joint"
-            # "RH_HAA" → "RR_hip_joint"
-            # "RH_HFE" → "RR_thigh_joint"
-            # "RH_KFE" → "RR_calf_joint"
-            "FL_hip_joint": 0.0,
-            "RL_hip_joint": 0.0,
-            "FR_hip_joint": -0.0,
-            "RR_hip_joint": -0.0,
-            "FL_thigh_joint": math.pi / 6,
-            "RL_thigh_joint": math.pi / 6,
-            "FR_thigh_joint": math.pi / 6,
-            "RR_thigh_joint": math.pi / 6,
-            "FL_calf_joint": -math.pi / 3,
-            "RL_calf_joint": -math.pi / 3,
-            "FR_calf_joint": -math.pi / 3,
-            "RR_calf_joint": -math.pi / 3,
+            "FL_hip_joint": 0.1,  # [rad]
+            "RL_hip_joint": 0.1,  # [rad]
+            "FR_hip_joint": -0.1,  # [rad]
+            "RR_hip_joint": -0.1,  # [rad]
+            "FL_thigh_joint": 0.8,  # [rad]
+            "RL_thigh_joint": 1.0,  # [rad]
+            "FR_thigh_joint": 0.8,  # [rad]
+            "RR_thigh_joint": 1.0,  # [rad]
+            "FL_calf_joint": -1.5,  # [rad]
+            "RL_calf_joint": -1.5,  # [rad]
+            "FR_calf_joint": -1.5,  # [rad]
+            "RR_calf_joint": -1.5,  # [rad]
         }
 
     class control(LeggedRobotCfg.control):
         # PD Drive parameters:
         stiffness = {
-            "hip_joint": 80.0,
-            "thigh_joint": 80.0,
-            "calf_joint": 80.0,
+            "hip_joint": 20.0,
+            "thigh_joint": 20.0,
+            "calf_joint": 20.0,
         }  # [N*m/rad]
         damping = {
-            "hip_joint": 2.0,
-            "thigh_joint": 2.0,
-            "calf_joint": 2.0,
+            "hip_joint": 0.5,
+            "thigh_joint": 0.5,
+            "calf_joint": 0.5,
         }  # [N*m*s/rad]
         # action scale: target angle = actionScale * action + defaultAngle
-        action_scale = 0.5
+        action_scale = 0.25
         # decimation: Number of control action updates @ sim DT per policy DT
         decimation = 4
         use_actuator_network = False
@@ -117,16 +93,33 @@ class UnitreeGo1RoughCfg(LeggedRobotCfg):
         self_collisions = 1  # 1 to disable, 0 to enable...bitwise filter
 
     class domain_rand(LeggedRobotCfg.domain_rand):
-        randomize_base_mass = True
-        added_mass_range = [-5.0, 5.0]
+        randomize_base_mass = False
+        added_mass_range = [-1.0, 3.0]
 
     class rewards(LeggedRobotCfg.rewards):
-        base_height_target = 0.5
+        base_height_target = 0.34
         max_contact_force = 500.0
         only_positive_rewards = True
 
         class scales(LeggedRobotCfg.rewards.scales):
             pass
+
+    class commands(LeggedRobotCfg.commands):
+        class ranges(LeggedRobotCfg.commands.ranges):
+            lin_vel_x = [-0.6, 0.6]
+            lin_vel_y = [-0.6, 0.6]
+
+    class noise(LeggedRobotCfg.noise):
+        add_noise = False
+
+    class rewards(LeggedRobotCfg.rewards):
+        # scaling the rewards as in https://github.com/Improbable-AI/walk-these-ways/blob/master/go1_gym/envs/go1/go1_config.py stops the learning
+        # class scales(LeggedRobotCfg.rewards.scales):
+        #     base_height = -30.0
+        #     orientation = -5.0
+        #     torques = -0.0001
+        #     action_rate = -0.01
+        soft_dof_pos_limit = 0.9
 
 
 # train_cfg
