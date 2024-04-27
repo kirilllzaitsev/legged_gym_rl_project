@@ -28,20 +28,25 @@
 #
 # Copyright (c) 2021 ETH Zurich, Nikita Rudin
 
-import numpy as np
 import os
 from datetime import datetime
 
 import isaacgym
+import numpy as np
+import torch
+
 from legged_gym.envs import task_registry
 from legged_gym.utils import get_args
-import torch
 
 
 def train(args):
     env, env_cfg = task_registry.make_env(name=args.task, args=args)
+    off_policy_algos = [
+        "dreamer",
+    ]
+    is_on_policy = not any(algo in args.task for algo in off_policy_algos)
     ppo_runner, train_cfg = task_registry.make_alg_runner(
-        env=env, name=args.task, args=args
+        env=env, name=args.task, args=args, is_on_policy=is_on_policy
     )
     ppo_runner.learn(
         num_learning_iterations=train_cfg.runner.max_iterations,

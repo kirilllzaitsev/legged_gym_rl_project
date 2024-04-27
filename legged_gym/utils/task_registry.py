@@ -27,27 +27,28 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 # Copyright (c) 2021 ETH Zurich, Nikita Rudin
-
 import os
+import typing as t
 from datetime import datetime
 from typing import Tuple
-from legged_gym.envs.base.base_config import BaseConfig
-import torch
+
 import numpy as np
-
+import torch
 from rsl_rl.env import VecEnv
-from rsl_rl.runners import OnPolicyRunner
+from rsl_rl.runners import OffPolicyRunner, OnPolicyRunner
 
-from legged_gym import LEGGED_GYM_ROOT_DIR, LEGGED_GYM_ENVS_DIR
-from .helpers import (
-    get_args,
-    update_cfg_from_args,
-    class_to_dict,
-    get_load_path,
-    set_seed,
-    parse_sim_params,
-)
+from legged_gym import LEGGED_GYM_ENVS_DIR, LEGGED_GYM_ROOT_DIR
+from legged_gym.envs.base.base_config import BaseConfig
 from legged_gym.envs.base.legged_robot_config import LeggedRobotCfg, LeggedRobotCfgPPO
+
+from .helpers import (
+    class_to_dict,
+    get_args,
+    get_load_path,
+    parse_sim_params,
+    set_seed,
+    update_cfg_from_args,
+)
 
 
 class TaskRegistry:
@@ -119,8 +120,14 @@ class TaskRegistry:
         return env, env_cfg
 
     def make_alg_runner(
-        self, env, name=None, args=None, train_cfg=None, log_root="default"
-    ) -> Tuple[OnPolicyRunner, BaseConfig]:
+        self,
+        env,
+        name=None,
+        args=None,
+        train_cfg=None,
+        log_root="default",
+        is_on_policy=True,
+    ) -> Tuple[t.Union[OnPolicyRunner, OffPolicyRunner], BaseConfig]:
         """Creates the training algorithm  either from a registered namme or from the provided config file.
 
         Args:
@@ -130,6 +137,7 @@ class TaskRegistry:
             train_cfg (Dict, optional): Training config file. If None 'name' will be used to get the config file. Defaults to None.
             log_root (str, optional): Logging directory for Tensorboard. Set to 'None' to avoid logging (at test time for example).
                                       Logs will be saved in <log_root>/<date_time>_<run_name>. Defaults to "default"=<path_to_LEGGED_GYM>/logs/<experiment_name>.
+            is_on_policy (bool, optional): If True, an OnPolicyRunner will be created, otherwise an OffPolicyRunner. Defaults to True.
 
         Raises:
             ValueError: Error if neither 'name' or 'train_cfg' are provided
@@ -175,7 +183,8 @@ class TaskRegistry:
             )
 
         train_cfg_dict = class_to_dict(train_cfg)
-        runner = OnPolicyRunner(env, train_cfg_dict, log_dir, device=args.rl_device)
+        runner_cls = OnPolicyRunner if is_on_policy else OffPolicyRunner
+        runner = runner_cls(env, train_cfg_dict, log_dir, device=args.rl_device)
         # save resume path before creating a new log_dir
         resume = train_cfg.runner.resume
         if resume:
