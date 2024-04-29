@@ -36,6 +36,14 @@ from legged_gym.envs.base.legged_robot_config import (
 
 
 class AnymalCRoughCfg(LeggedRobotCfg):
+
+    def __init__(self, kwargs=None):
+        self.kwargs = kwargs or {}
+        # in format "attr.key": value
+        for key, value in self.kwargs.items():
+            attr, key = key.split(".")
+            setattr(getattr(self, attr), key, value)
+
     class env(LeggedRobotCfg.env):
         num_envs = 2048
         num_actions = 12
@@ -102,11 +110,8 @@ class AnymalCRoughCfgPPO(LeggedRobotCfgPPO):
 
 
 class AnymalCRoughCfgDayDreamer(LeggedRobotCfgDayDreamer):
-    class env(LeggedRobotCfg.env):
-        num_envs = 64
-        num_actions = 12
 
     class runner(LeggedRobotCfgDayDreamer.runner):
-        run_name = "model_based"
+        run_name = "dreamer"
         experiment_name = "rough_anymal_c"
         load_run = -1
