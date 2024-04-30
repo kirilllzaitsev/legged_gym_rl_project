@@ -61,9 +61,7 @@ task_registry.register(
 )
 task_registry.register("anymal_c_flat", Anymal, AnymalCFlatCfg(), AnymalCFlatCfgPPO())
 task_registry.register(
-    "anymal_c_flat_daydreamer", Anymal, env_cfg=AnymalCFlatCfg({
-        "env.num_envs": 512,
-    }), train_cfg=AnymalCFlatCfgDayDreamer()
+    "anymal_c_flat_daydreamer", Anymal, env_cfg=AnymalCFlatCfg(), train_cfg=AnymalCFlatCfgDayDreamer()
 )
 # name task_class env_cfg train_cfg
 task_registry.register(
