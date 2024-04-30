@@ -37,15 +37,8 @@ from legged_gym.envs.base.legged_robot_config import (
 
 class AnymalCRoughCfg(LeggedRobotCfg):
 
-    def __init__(self, kwargs=None):
-        self.kwargs = kwargs or {}
-        # in format "attr.key": value
-        for key, value in self.kwargs.items():
-            attr, key = key.split(".")
-            setattr(getattr(self, attr), key, value)
-
     class env(LeggedRobotCfg.env):
-        num_envs = 2048
+        num_envs = 512
         num_actions = 12
 
     class terrain(LeggedRobotCfg.terrain):
