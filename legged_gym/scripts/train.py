@@ -29,25 +29,49 @@
 # Copyright (c) 2021 ETH Zurich, Nikita Rudin
 
 import os
+import sys
 from datetime import datetime
+from pathlib import Path
 
 import isaacgym
 import numpy as np
 import torch
 
-from legged_gym.envs import task_registry
+from legged_gym.envs import off_policy_algos, task_registry
 from legged_gym.utils import get_args
+from legged_gym.utils.helpers import class_to_dict
 
 
 def train(args):
     env, env_cfg = task_registry.make_env(name=args.task, args=args)
-    off_policy_algos = [
-        "dreamer",
-    ]
+
     is_on_policy = not any(algo in args.task for algo in off_policy_algos)
     ppo_runner, train_cfg = task_registry.make_alg_runner(
         env=env, name=args.task, args=args, is_on_policy=is_on_policy
     )
+
+    if ppo_runner.log_dir is not None:
+        import yaml
+
+        with open(os.path.join(ppo_runner.log_dir, "train_cfg.yaml"), "w") as f:
+            yaml.dump(class_to_dict(train_cfg), f)
+        with open(os.path.join(ppo_runner.log_dir, "env_cfg.yaml"), "w") as f:
+            yaml.dump(class_to_dict(env_cfg), f)
+        with open(os.path.join(ppo_runner.log_dir, "args.yaml"), "w") as f:
+            yaml.dump(vars(args), f)
+        # save entire source code
+        legged_gym_path = Path(__file__).resolve().parents[1]
+        rsl_rl_path = Path(__file__).resolve().parents[2] / "rsl_rl"
+        os.system(
+            f"rsync -a --exclude='logs' --exclude='resources' --exclude='__pycache__' {legged_gym_path} {ppo_runner.log_dir}"
+        )
+        for path_to_copy in [
+            rsl_rl_path,
+            rsl_rl_path / "rsl_rl/algorithms/daydreamer.py",
+            rsl_rl_path / "rsl_rl/runners/off_policy_runner.py",
+        ]:
+            os.system(f"rsync -a {path_to_copy} {ppo_runner.log_dir}")
+
     ppo_runner.learn(
         num_learning_iterations=train_cfg.runner.max_iterations,
         init_at_random_ep_len=True,
