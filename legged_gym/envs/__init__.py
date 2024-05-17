@@ -40,6 +40,7 @@ from .anymal_c.mixed_terrains.anymal_c_rough_config import (
 from .anymal_c.flat.anymal_c_flat_config import (
     AnymalCFlatCfg,
     AnymalCFlatCfgDayDreamer,
+    AnymalCFlatCfgEasy,
     AnymalCFlatCfgPPO,
 )
 from .unitree_go1.flat.unitree_go1_flat_config import (
@@ -61,7 +62,7 @@ task_registry.register(
 )
 task_registry.register("anymal_c_flat", Anymal, AnymalCFlatCfg(), AnymalCFlatCfgPPO())
 task_registry.register(
-    "anymal_c_flat_daydreamer", Anymal, env_cfg=AnymalCFlatCfg(), train_cfg=AnymalCFlatCfgDayDreamer()
+    "anymal_c_flat_daydreamer", Anymal, env_cfg=AnymalCFlatCfgEasy(), train_cfg=AnymalCFlatCfgDayDreamer()
 )
 # name task_class env_cfg train_cfg
 task_registry.register(
@@ -73,3 +74,6 @@ task_registry.register(
 task_registry.register("anymal_b", Anymal, AnymalBRoughCfg(), AnymalBRoughCfgPPO())
 task_registry.register("a1", LeggedRobot, A1RoughCfg(), A1RoughCfgPPO())
 task_registry.register("cassie", Cassie, CassieRoughCfg(), CassieRoughCfgPPO())
+off_policy_algos = [
+        "dreamer",
+    ]
