@@ -70,6 +70,54 @@ class AnymalCFlatCfg(AnymalCRoughCfg):
         ]  # on ground planes the friction combination mode is averaging, i.e total friction = (foot_friction + 1.)/2.
 
 
+# env_cfg
+class AnymalCFlatCfgEasy(AnymalCRoughCfg):
+    class env(AnymalCRoughCfg.env):
+        num_observations = 48
+
+    class terrain(AnymalCRoughCfg.terrain):
+        mesh_type = "plane"
+        measure_heights = False
+
+    class asset(AnymalCRoughCfg.asset):
+        self_collisions = 0  # 1 to disable, 0 to enable...bitwise filter
+
+    class rewards(AnymalCRoughCfg.rewards):
+        max_contact_force = 350.0
+
+        class scales(AnymalCRoughCfg.rewards.scales):
+            orientation = -5.0
+            torques = -0.000025
+            feet_air_time = 2.0
+            tracking_lin_vel = 1.0
+            tracking_ang_vel = 0.5
+            # feet_contact_forces = -0.01
+
+    class commands(AnymalCRoughCfg.commands):
+        heading_command = True
+        resampling_time = 4.0
+
+        class ranges(AnymalCRoughCfg.commands.ranges):
+            ang_vel_yaw = [-1.5, 1.5]
+
+    class domain_rand(AnymalCRoughCfg.domain_rand):
+        randomize_friction = False
+        randomize_base_mass = False
+        push_robots = False
+
+    class noise:
+        add_noise = False
+        noise_level = 1.0  # scales other values
+
+        class noise_scales:
+            dof_pos = 1.0
+            dof_vel = 1.0
+            lin_vel = 1.0
+            ang_vel = 1.0
+            gravity = 1.0
+            height_measurements = 1.0
+
+
 # train_cfg
 class AnymalCFlatCfgPPO(AnymalCRoughCfgPPO):
     class policy(AnymalCRoughCfgPPO.policy):
