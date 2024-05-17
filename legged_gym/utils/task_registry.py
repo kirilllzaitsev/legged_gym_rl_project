@@ -28,6 +28,7 @@
 #
 # Copyright (c) 2021 ETH Zurich, Nikita Rudin
 import os
+import sys
 import typing as t
 from datetime import datetime
 from typing import Tuple
@@ -167,6 +168,7 @@ class TaskRegistry:
         # if no args passed get command line arguments
         if args is None:
             args = get_args()
+
         # if config files are passed use them, otherwise load from the name
         if train_cfg is None:
             if name is None:
@@ -179,28 +181,39 @@ class TaskRegistry:
         # override cfg from args (if specified)
         _, train_cfg = update_cfg_from_args(None, train_cfg, args)
 
+        train_cfg_dict = class_to_dict(train_cfg)
+        runner_cls = OnPolicyRunner if is_on_policy else OffPolicyRunner
+
+        exp_name = datetime.now().strftime("%b%d_%H-%M-%S")
+        exp_name = (
+            exp_name
+            + "_"
+            + ((train_cfg.runner.run_name) if args.exp_name is None else args.exp_name)
+        )
         if log_root == "default":
             log_root = os.path.join(
                 LEGGED_GYM_ROOT_DIR, "logs", train_cfg.runner.experiment_name
             )
+
             log_dir = os.path.join(
                 log_root,
-                datetime.now().strftime("%b%d_%H-%M-%S")
-                + "_"
-                + train_cfg.runner.run_name,
+                exp_name,
             )
         elif log_root is None:
             log_dir = None
         else:
             log_dir = os.path.join(
                 log_root,
-                datetime.now().strftime("%b%d_%H-%M-%S")
-                + "_"
-                + train_cfg.runner.run_name,
+                exp_name,
             )
+        if not args.do_log:
+            log_dir = None
 
-        train_cfg_dict = class_to_dict(train_cfg)
-        runner_cls = OnPolicyRunner if is_on_policy else OffPolicyRunner
+        if log_dir is not None:
+            os.makedirs(log_dir, exist_ok=True)
+            sys.stdout = ConsoleOutputWrapper(os.path.join(log_dir, "log.txt"))
+
+
         runner = runner_cls(env, train_cfg_dict, log_dir, device=args.rl_device)
         # save resume path before creating a new log_dir
         resume = train_cfg.runner.resume
