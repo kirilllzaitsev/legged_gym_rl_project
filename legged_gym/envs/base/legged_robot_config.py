@@ -279,32 +279,8 @@ class LeggedRobotCfgPPO(BaseConfig):
 
 class LeggedRobotCfgDayDreamer(BaseConfig):
     seed = 1
-    runner_class_name = "OnPolicyRunner"
+    runner_class_name = "OffPolicyRunner"
 
-    class policy:
-        init_noise_std = 1.0
-        actor_hidden_dims = [512, 256, 128]
-        critic_hidden_dims = [512, 256, 128]
-        activation = "elu"  # can be elu, relu, selu, crelu, lrelu, tanh, sigmoid
-        # only for 'ActorCriticRecurrent':
-        # rnn_type = 'lstm'
-        # rnn_hidden_size = 512
-        # rnn_num_layers = 1
-
-    class algorithm:
-        # training params
-        value_loss_coef = 1.0
-        use_clipped_value_loss = True
-        clip_param = 0.2
-        entropy_coef = 0.01
-        num_learning_epochs = 5
-        num_mini_batches = 4  # mini batch size = num_envs*nsteps / nminibatches
-        learning_rate = 1.0e-3  # 5.e-4
-        schedule = "adaptive"  # could be adaptive, fixed
-        gamma = 0.99
-        lam = 0.95
-        desired_kl = 0.01
-        max_grad_norm = 1.0
 
     class runner:
         policy_class_name = "ActorCritic"
