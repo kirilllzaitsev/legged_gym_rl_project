@@ -74,16 +74,10 @@ class UnitreeGo1FlatCfg(UnitreeGo1RoughCfg):
 
 
 class UnitreeGo1FlatCfgDayDreamer(UnitreeGo1RoughCfgDayDreamer):
-    class policy(UnitreeGo1RoughCfgDayDreamer.policy):
-        actor_hidden_dims = [128, 64, 32]
-        critic_hidden_dims = [128, 64, 32]
-        activation = "elu"  # can be elu, relu, selu, crelu, lrelu, tanh, sigmoid
 
-    class algorithm(UnitreeGo1RoughCfgDayDreamer.algorithm):
-        entropy_coef = 0.01
 
     class runner(UnitreeGo1RoughCfgDayDreamer.runner):
-        run_name = "model_based"
+        run_name = "dreamer"
         experiment_name = "unitree_go1"
         load_run = -1
         max_iterations = 300
