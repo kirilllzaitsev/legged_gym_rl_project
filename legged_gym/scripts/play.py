@@ -28,15 +28,15 @@
 #
 # Copyright (c) 2021 ETH Zurich, Nikita Rudin
 
-from legged_gym import LEGGED_GYM_ROOT_DIR
 import os
 
 import isaacgym
-from legged_gym.envs import *
-from legged_gym.utils import get_args, export_policy_as_jit, task_registry, Logger
-
 import numpy as np
 import torch
+
+from legged_gym import LEGGED_GYM_ROOT_DIR
+from legged_gym.envs import off_policy_algos, task_registry
+from legged_gym.utils import Logger, export_policy_as_jit, get_args, task_registry
 
 
 def play(args):
@@ -55,8 +55,13 @@ def play(args):
     obs = env.get_observations()
     # load policy
     train_cfg.runner.resume = True
+    is_on_policy = not any(algo in args.task for algo in off_policy_algos)
     ppo_runner, train_cfg = task_registry.make_alg_runner(
-        env=env, name=args.task, args=args, train_cfg=train_cfg
+        env=env,
+        name=args.task,
+        args=args,
+        train_cfg=train_cfg,
+        is_on_policy=is_on_policy,
     )
     policy = ppo_runner.get_inference_policy(device=env.device)
 
@@ -85,7 +90,10 @@ def play(args):
     img_idx = 0
 
     for i in range(10 * int(env.max_episode_length)):
-        actions = policy(obs.detach())
+        if is_on_policy:
+            actions = policy(obs.detach())
+        else:
+            actions= policy(obs, num_actions=env.num_actions, device=env.device)
         obs, _, rews, dones, infos = env.step(actions.detach())
         if RECORD_FRAMES:
             if i % 2:
@@ -137,7 +145,7 @@ def play(args):
 
 
 if __name__ == "__main__":
-    EXPORT_POLICY = True
+    EXPORT_POLICY = False
     RECORD_FRAMES = False
     MOVE_CAMERA = False
     args = get_args()
