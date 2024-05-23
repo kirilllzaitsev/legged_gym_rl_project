@@ -28,15 +28,14 @@
 #
 # Copyright (c) 2021 ETH Zurich, Nikita Rudin
 
-import os
 import copy
-import torch
-import numpy as np
+import os
 import random
-from isaacgym import gymapi
-from isaacgym import gymutil
 
-from legged_gym import LEGGED_GYM_ROOT_DIR, LEGGED_GYM_ENVS_DIR
+import numpy as np
+import torch
+from isaacgym import gymapi, gymutil
+from legged_gym import LEGGED_GYM_ENVS_DIR, LEGGED_GYM_ROOT_DIR
 
 
 def class_to_dict(obj) -> dict:
@@ -164,6 +163,23 @@ def get_args():
             "type": str,
             "default": "anymal_c_flat",
             "help": "Resume training or start testing from a checkpoint. Overrides config file if provided.",
+        },
+        dict(
+            name="--config",
+            type=str,
+            default="dmc-walker-walk.yml",
+            help="applies to SimpleDreamer. config file to run(default: dmc-walker-walk.yml)",
+        ),
+        dict(
+            name="--log_root",
+            type=str,
+            help="path to the log_root dir with runs to load",
+        ),
+        {
+            "name": "--external",
+            "action": "store_true",
+            "default": False,
+            "help": "Run from external codebase",
         },
         {
             "name": "--resume",

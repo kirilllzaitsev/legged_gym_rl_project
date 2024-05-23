@@ -34,6 +34,8 @@ import isaacgym
 import numpy as np
 import torch
 
+from dreamer.algorithms.dreamer import Dreamer
+from dreamer.utils.utils import load_config
 from legged_gym import LEGGED_GYM_ROOT_DIR
 from legged_gym.envs import off_policy_algos, task_registry
 from legged_gym.utils import Logger, export_policy_as_jit, get_args, task_registry
@@ -56,13 +58,25 @@ def play(args):
     # load policy
     train_cfg.runner.resume = True
     is_on_policy = not any(algo in args.task for algo in off_policy_algos)
-    ppo_runner, train_cfg = task_registry.make_alg_runner(
-        env=env,
-        name=args.task,
-        args=args,
-        train_cfg=train_cfg,
-        is_on_policy=is_on_policy,
-    )
+    if args.external:
+        config = load_config(args.config)
+        ppo_runner = Dreamer(
+            # obs_shape, discrete_action_bool, action_size, writer, device, config
+            obs.shape,
+            False,
+            env.num_actions,
+            None,
+            env.device,
+            config,
+        )
+    else:
+        ppo_runner, train_cfg = task_registry.make_alg_runner(
+            env=env,
+            name=args.task,
+            args=args,
+            train_cfg=train_cfg,
+            is_on_policy=is_on_policy,
+        )
     policy = ppo_runner.get_inference_policy(device=env.device)
 
     # export policy as a jit module (used to run it from C++)

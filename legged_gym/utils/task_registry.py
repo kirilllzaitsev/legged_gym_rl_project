@@ -184,7 +184,7 @@ class TaskRegistry:
         train_cfg_dict = class_to_dict(train_cfg)
         runner_cls = OnPolicyRunner if is_on_policy else OffPolicyRunner
 
-        exp_name = datetime.now().strftime("%b%d_%H-%M-%S")
+        exp_name = datetime.now().strftime("%b%d_%H_%M_%S")
         exp_name = (
             exp_name
             + "_"
@@ -220,7 +220,7 @@ class TaskRegistry:
         if resume:
             # load previously trained model
             resume_path = get_load_path(
-                log_root,
+                getattr(args, "log_root", log_root),
                 load_run=train_cfg.runner.load_run,
                 checkpoint=train_cfg.runner.checkpoint,
             )
