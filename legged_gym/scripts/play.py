@@ -33,9 +33,9 @@ import os
 import isaacgym
 import numpy as np
 import torch
-
 from dreamer.algorithms.dreamer import Dreamer
 from dreamer.utils.utils import load_config
+
 from legged_gym import LEGGED_GYM_ROOT_DIR
 from legged_gym.envs import off_policy_algos, task_registry
 from legged_gym.utils import Logger, export_policy_as_jit, get_args, task_registry
@@ -68,6 +68,7 @@ def play(args):
             None,
             env.device,
             config,
+            num_envs=args.num_envs,
         )
     else:
         ppo_runner, train_cfg = task_registry.make_alg_runner(
@@ -107,7 +108,7 @@ def play(args):
         if is_on_policy:
             actions = policy(obs.detach())
         else:
-            actions= policy(obs, num_actions=env.num_actions, device=env.device)
+            actions = policy(obs, num_actions=env.num_actions, device=env.device)
         obs, _, rews, dones, infos = env.step(actions.detach())
         if RECORD_FRAMES:
             if i % 2:

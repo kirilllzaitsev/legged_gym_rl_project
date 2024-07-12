@@ -182,10 +182,21 @@ def get_args():
             "help": "Run from external codebase",
         },
         {
+            "name": "--do_log",
+            "action": "store_true",
+            "default": False,
+            "help": "log or not",
+        },
+        {
             "name": "--resume",
             "action": "store_true",
             "default": False,
             "help": "Resume training from a checkpoint",
+        },
+        {
+            "name": "--exp_name",
+            "type": str,
+            "help": "",
         },
         {
             "name": "--experiment_name",

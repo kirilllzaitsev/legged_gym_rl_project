@@ -219,8 +219,10 @@ class TaskRegistry:
         resume = train_cfg.runner.resume
         if resume:
             # load previously trained model
+            if hasattr(args, "log_root") and args.log_root is not None:
+                log_root = args.log_root
             resume_path = get_load_path(
-                getattr(args, "log_root", log_root),
+                log_root,
                 load_run=train_cfg.runner.load_run,
                 checkpoint=train_cfg.runner.checkpoint,
             )
