@@ -185,11 +185,11 @@ class TaskRegistry:
         runner_cls = OnPolicyRunner if is_on_policy else OffPolicyRunner
 
         exp_name = datetime.now().strftime("%b%d_%H_%M_%S")
-        exp_name = (
-            exp_name
-            + "_"
-            + ((train_cfg.runner.run_name) if args.exp_name is None else args.exp_name)
-        )
+        alg_name = train_cfg.runner.run_name
+        if args.exp_name:
+            exp_name = f"{alg_name}_{args.exp_name}_{exp_name}"
+        else:
+            exp_name = f"{alg_name}_{exp_name}"
         if log_root == "default":
             log_root = os.path.join(
                 LEGGED_GYM_ROOT_DIR, "logs", train_cfg.runner.experiment_name
@@ -212,7 +212,6 @@ class TaskRegistry:
         if log_dir is not None:
             os.makedirs(log_dir, exist_ok=True)
             sys.stdout = ConsoleOutputWrapper(os.path.join(log_dir, "log.txt"))
-
 
         runner = runner_cls(env, train_cfg_dict, log_dir, device=args.rl_device)
         # save resume path before creating a new log_dir

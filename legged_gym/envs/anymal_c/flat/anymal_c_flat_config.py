@@ -129,7 +129,7 @@ class AnymalCFlatCfgPPO(AnymalCRoughCfgPPO):
         entropy_coef = 0.01
 
     class runner(AnymalCRoughCfgPPO.runner):
-        run_name = ""
+        run_name = "ppo"
         experiment_name = "flat_anymal_c"
         load_run = -1
         max_iterations = 300
