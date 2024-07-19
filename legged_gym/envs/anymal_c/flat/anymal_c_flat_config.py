@@ -95,10 +95,13 @@ class AnymalCFlatCfgEasy(AnymalCRoughCfg):
 
     class commands(AnymalCRoughCfg.commands):
         heading_command = True
-        resampling_time = 4.0
+        resampling_time = int(1e9)
 
         class ranges(AnymalCRoughCfg.commands.ranges):
-            ang_vel_yaw = [-1.5, 1.5]
+            lin_vel_x = [0.0, 0.001]  # min max [m/s]
+            lin_vel_y = [1.0, 1.0001]  # min max [m/s]
+            ang_vel_yaw = [0, 0.0001]  # min max [rad/s]
+            heading = [0.0, 0.0001]
 
     class domain_rand(AnymalCRoughCfg.domain_rand):
         randomize_friction = False
