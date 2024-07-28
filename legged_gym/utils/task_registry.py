@@ -185,11 +185,13 @@ class TaskRegistry:
         runner_cls = OnPolicyRunner if is_on_policy else OffPolicyRunner
 
         exp_name = datetime.now().strftime("%b%d_%H_%M_%S")
-        alg_name = train_cfg.runner.run_name
+        alg_name = "dreamer" if "dreamer" in args.task else "ppo"
+        robot = "any" if "anymal" in args.task else "uni"
+        prefix = f"{alg_name}_{robot}"
         if args.exp_name:
-            exp_name = f"{alg_name}_{args.exp_name}_{exp_name}"
+            exp_name = f"{prefix}_{args.exp_name}_{exp_name}"
         else:
-            exp_name = f"{alg_name}_{exp_name}"
+            exp_name = f"{prefix}_{exp_name}"
         if log_root == "default":
             log_root = os.path.join(
                 LEGGED_GYM_ROOT_DIR, "logs", train_cfg.runner.experiment_name

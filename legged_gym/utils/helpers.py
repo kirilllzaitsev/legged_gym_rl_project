@@ -136,6 +136,10 @@ def update_cfg_from_args(env_cfg, cfg_train, args):
         # num envs
         if args.num_envs is not None:
             env_cfg.env.num_envs = args.num_envs
+        env_cfg.use_cameras = getattr(args, "use_cameras", False)
+        # env_cfg.enable_viewer_sync = getattr(args, "enable_viewer_sync", False)
+        env_cfg.enable_viewer_sync = True
+        env_cfg.frame_size = getattr(args, "frame_size", 64)
     if cfg_train is not None:
         if args.seed is not None:
             cfg_train.seed = args.seed
@@ -163,6 +167,20 @@ def get_args():
             "type": str,
             "default": "anymal_c_flat",
             "help": "Resume training or start testing from a checkpoint. Overrides config file if provided.",
+        },
+        {
+            "name": "--use_cameras",
+            "action": "store_true",
+        },
+        {
+            "name": "--enable_viewer_sync",
+            "action": "store_true",
+        },
+        {
+            "name": "--frame_size",
+            "type": int,
+            "default": 64,
+            "help": "Frame size for pixel observations",
         },
         dict(
             name="--config",
