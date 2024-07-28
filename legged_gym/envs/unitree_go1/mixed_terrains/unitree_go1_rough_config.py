@@ -30,11 +30,7 @@
 
 import math
 
-from legged_gym.envs.base.legged_robot_config import (
-    LeggedRobotCfg,
-    LeggedRobotCfgDayDreamer,
-    LeggedRobotCfgPPO,
-)
+from legged_gym.envs.base.legged_robot_config import LeggedRobotCfg, LeggedRobotCfgDayDreamer, LeggedRobotCfgPPO
 
 
 # env_cfg
@@ -73,28 +69,47 @@ class UnitreeGo1RoughCfg(LeggedRobotCfg):
         decimation = 4
         use_actuator_network = False
         actuator_net_file = (
-            "{LEGGED_GYM_ROOT_DIR}/resources/actuator_nets/anydrive_v3_lstm.pt"
+            "{LEGGED_GYM_ROOT_DIR}/resources/actuator_nets/unitree_go1.pt"
         )
 
+        # not in original config
+        hip_scale_reduction = 0.5
+
     class asset(LeggedRobotCfg.asset):
-        file = "{LEGGED_GYM_ROOT_DIR}/resources/robots/go1_description/urdf/go1.urdf"
+        file = "{LEGGED_GYM_ROOT_DIR}/resources/robots/go1/urdf/go1.urdf"
         name = "go1"
         foot_name = "foot"
-        penalize_contacts_on = ["shank", "thigh"]
+        penalize_contacts_on = ["thigh", "calf"]
         terminate_after_contacts_on = ["base"]
-        self_collisions = 1  # 1 to disable, 0 to enable...bitwise filter
+        self_collisions = 0  # 1 to disable, 0 to enable...bitwise filter
+        flip_visual_attachments = False
+        fix_base_link = False
 
     class domain_rand(LeggedRobotCfg.domain_rand):
-        randomize_base_mass = False
+        randomize_base_mass = True
         added_mass_range = [-1.0, 3.0]
+        push_robots = False
+        max_push_vel_xy = 0.5
+        randomize_friction = False
+        friction_range = [0.5, 1.25]
 
     class rewards(LeggedRobotCfg.rewards):
         base_height_target = 0.34
         max_contact_force = 500.0
         only_positive_rewards = True
 
+        soft_dof_pos_limit = 0.9
+
+        # scaling the rewards as in https://github.com/Improbable-AI/walk-these-ways/blob/master/go1_gym/envs/go1/go1_config.py stops the learning
         class scales(LeggedRobotCfg.rewards.scales):
-            pass
+            base_height = -30.0
+            orientation = -5.0
+            torques = -0.0001
+            action_rate = -0.01
+            dof_pos_limits = -10.0
+
+        # class scales(LeggedRobotCfg.rewards.scales):
+        #     pass
 
     class commands(LeggedRobotCfg.commands):
         class ranges(LeggedRobotCfg.commands.ranges):
@@ -104,16 +119,6 @@ class UnitreeGo1RoughCfg(LeggedRobotCfg):
     class noise(LeggedRobotCfg.noise):
         add_noise = False
 
-    class rewards(LeggedRobotCfg.rewards):
-        # scaling the rewards as in https://github.com/Improbable-AI/walk-these-ways/blob/master/go1_gym/envs/go1/go1_config.py stops the learning
-        # class scales(LeggedRobotCfg.rewards.scales):
-        #     base_height = -30.0
-        #     orientation = -5.0
-        #     torques = -0.0001
-        #     action_rate = -0.01
-        #     dof_pos_limits = -10.0
-        soft_dof_pos_limit = 0.9
-
 
 # train_cfg
 class UnitreeGo1RoughCfgDayDreamer(LeggedRobotCfgDayDreamer):
@@ -122,6 +127,16 @@ class UnitreeGo1RoughCfgDayDreamer(LeggedRobotCfgDayDreamer):
         num_actions = 12
 
     class runner(LeggedRobotCfgDayDreamer.runner):
-        run_name = "model_based"
+        run_name = ""
+        experiment_name = "rough_unitree_go1"
+        load_run = -1
+# train_cfg
+class UnitreeGo1RoughCfgPPO(LeggedRobotCfgPPO):
+    class env(LeggedRobotCfg.env):
+        num_envs = 64
+        num_actions = 12
+
+    class runner(LeggedRobotCfgPPO.runner):
+        run_name = ""
         experiment_name = "rough_unitree_go1"
         load_run = -1
