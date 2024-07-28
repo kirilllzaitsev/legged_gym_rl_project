@@ -72,10 +72,16 @@ def train(args):
         ]:
             os.system(f"rsync -a {path_to_copy} {ppo_runner.log_dir}")
 
-    ppo_runner.learn(
-        num_learning_iterations=train_cfg.runner.max_iterations,
-        init_at_random_ep_len=True,
-    )
+    try:
+        ppo_runner.learn(
+            num_learning_iterations=train_cfg.runner.max_iterations,
+            init_at_random_ep_len=True,
+        )
+    finally:
+        if ppo_runner.log_dir is not None:
+            print(
+                f"log_dir: {Path(ppo_runner.log_dir).name}. full path: {ppo_runner.log_dir}"
+            )
 
 
 if __name__ == "__main__":

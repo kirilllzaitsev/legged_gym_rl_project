@@ -74,6 +74,7 @@ class AnymalCFlatCfg(AnymalCRoughCfg):
 class AnymalCFlatCfgEasy(AnymalCRoughCfg):
     class env(AnymalCRoughCfg.env):
         num_observations = 48
+        use_cameras = False
 
     class terrain(AnymalCRoughCfg.terrain):
         mesh_type = "plane"
@@ -99,7 +100,7 @@ class AnymalCFlatCfgEasy(AnymalCRoughCfg):
 
         class ranges(AnymalCRoughCfg.commands.ranges):
             lin_vel_x = [0.0, 0.001]  # min max [m/s]
-            lin_vel_y = [1.0, 1.0001]  # min max [m/s]
+            lin_vel_y = [0.3, 0.30001]  # min max [m/s]
             ang_vel_yaw = [0, 0.0001]  # min max [rad/s]
             heading = [0.0, 0.0001]
 

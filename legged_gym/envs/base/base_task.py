@@ -97,7 +97,8 @@ class BaseTask:
         self.gym.prepare_sim(self.sim)
 
         # todo: read from config
-        self.enable_viewer_sync = True
+        # pixels are zero if the viewer is not enabled (at least once in the beginning)
+        self.enable_viewer_sync = getattr(cfg, "enable_viewer_sync", True)
         self.viewer = None
 
         # if running with a viewer, set up keyboard shortcuts and camera
