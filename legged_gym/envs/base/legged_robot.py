@@ -28,24 +28,23 @@
 #
 # Copyright (c) 2021 ETH Zurich, Nikita Rudin
 
-from legged_gym import LEGGED_GYM_ROOT_DIR, envs
-from time import time
-from warnings import WarningMessage
-import numpy as np
 import os
+from time import time
+from typing import Dict, Tuple
+from warnings import WarningMessage
 
-from isaacgym.torch_utils import *
-from isaacgym import gymtorch, gymapi, gymutil
-
+import numpy as np
 import torch
+from isaacgym import gymapi, gymtorch, gymutil
+from isaacgym.torch_utils import *
 from torch import Tensor
-from typing import Tuple, Dict
 
-from legged_gym import LEGGED_GYM_ROOT_DIR
+from legged_gym import LEGGED_GYM_ROOT_DIR, envs
 from legged_gym.envs.base.base_task import BaseTask
-from legged_gym.utils.terrain import Terrain
-from legged_gym.utils.math import quat_apply_yaw, wrap_to_pi, torch_rand_sqrt_float
 from legged_gym.utils.helpers import class_to_dict
+from legged_gym.utils.math import quat_apply_yaw, torch_rand_sqrt_float, wrap_to_pi
+from legged_gym.utils.terrain import Terrain
+
 from .legged_robot_config import LeggedRobotCfg
 
 
@@ -75,6 +74,9 @@ class LeggedRobot(BaseTask):
 
         if not self.headless:
             self.set_camera(self.cfg.viewer.pos, self.cfg.viewer.lookat)
+
+        self.use_cameras = getattr(cfg, "use_cameras", False)
+        self.frame_width = self.frame_height = getattr(cfg, "frame_size", 64)
         self._init_buffers()
         self._prepare_reward_function()
         self.init_done = True
@@ -270,6 +272,21 @@ class LeggedRobot(BaseTask):
             self.obs_buf += (
                 2 * torch.rand_like(self.obs_buf) - 1
             ) * self.noise_scale_vec
+
+        if self.use_cameras:
+            self.gym.render_all_camera_sensors(self.sim)
+            self.gym.start_access_image_tensors(self.sim)
+            self.get_camera_obs()
+
+    def get_camera_obs(self):
+        for i in range(self.num_envs):
+            rgb_image = self.gym.get_camera_image(
+                self.sim, self.envs[i], self.camera_handles[i], gymapi.IMAGE_COLOR
+            )
+            rgb_image = rgb_image.reshape(rgb_image.shape[0], -1, 4)[..., :3]
+            self.pixels[i] = (
+                torch.from_numpy(rgb_image).permute(2, 0, 1).float() / 255.0
+            )
 
     def create_sim(self):
         """Creates simulation, terrain and evironments"""
