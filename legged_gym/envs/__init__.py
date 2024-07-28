@@ -30,6 +30,7 @@
 
 from legged_gym import LEGGED_GYM_ROOT_DIR, LEGGED_GYM_ENVS_DIR
 from legged_gym.envs.a1.a1_config import A1RoughCfg, A1RoughCfgPPO
+from .unitree_go1.mixed_terrains.unitree_go1_rough_config import UnitreeGo1RoughCfgDayDreamer
 from .base.legged_robot import LeggedRobot
 from .anymal_c.anymal import Anymal
 from .anymal_c.mixed_terrains.anymal_c_rough_config import (
@@ -46,6 +47,8 @@ from .anymal_c.flat.anymal_c_flat_config import (
 from .unitree_go1.flat.unitree_go1_flat_config import (
     UnitreeGo1FlatCfg,
     UnitreeGo1FlatCfgDayDreamer,
+    UnitreeGo1FlatCfgEasy,
+    UnitreeGo1FlatCfgPPO,
 )
 from .anymal_b.anymal_b_config import AnymalBRoughCfg, AnymalBRoughCfgPPO
 from .cassie.cassie import Cassie
@@ -70,6 +73,13 @@ task_registry.register(
     Anymal,
     UnitreeGo1FlatCfg(),
     UnitreeGo1FlatCfgDayDreamer(),
+)
+task_registry.register(
+    "unitree_go1_flat",
+    Anymal,
+    UnitreeGo1FlatCfg(),
+    # UnitreeGo1FlatCfgEasy(),
+    UnitreeGo1FlatCfgPPO(),
 )
 task_registry.register("anymal_b", Anymal, AnymalBRoughCfg(), AnymalBRoughCfgPPO())
 task_registry.register("a1", LeggedRobot, A1RoughCfg(), A1RoughCfgPPO())
