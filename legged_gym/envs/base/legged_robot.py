@@ -745,7 +745,63 @@ class LeggedRobot(BaseTask):
                     print(
                         f"PD gain of joint {name} were not defined, setting them to zero"
                     )
+
+        # init cameras
+        if self.use_cameras:
+            self.camera_handles = []
+            self.pixels = torch.zeros(
+                self.num_envs,
+                3,
+                self.frame_height,
+                self.frame_width,
+                dtype=torch.float,
+                device=self.device,
+                requires_grad=False,
+            )
+            for i in range(self.num_envs):
+                self.camera_handles.append(self.create_camera(i))
+
         self.default_dof_pos = self.default_dof_pos.unsqueeze(0)
+
+    def create_camera(self, env_id):
+        camera_properties = gymapi.CameraProperties()
+        camera_properties.width = self.frame_width
+        camera_properties.height = self.frame_height
+        h2 = self.gym.create_camera_sensor(self.envs[env_id], camera_properties)
+        # camera_offset = gymapi.Vec3(1,1,1)
+        # camera_offset = gymapi.Vec3(-1.5, 0, 1)
+        # camera_rotation = gymapi.Quat.from_axis_angle(gymapi.Vec3(0, 1, 0), np.deg2rad(30))
+        camera_offset = gymapi.Vec3(0, 0, 1)
+        camera_rotation = gymapi.Quat.from_axis_angle(
+            gymapi.Vec3(0, 1, 0), np.deg2rad(90)
+        )
+        actor_handle = self.actor_handles[env_id]
+        body_handle = self.gym.get_actor_rigid_body_handle(
+            self.envs[env_id], actor_handle, 0
+        )
+
+        self.gym.attach_camera_to_body(
+            h2,
+            self.envs[env_id],
+            body_handle,
+            gymapi.Transform(camera_offset, camera_rotation),
+            gymapi.FOLLOW_TRANSFORM,
+        )
+
+        # # Get the actor's transform
+        actor_transform = self.gym.get_rigid_transform(self.envs[env_id], body_handle)
+
+        # # Calculate the absolute position of the camera
+        camera_position_absolute = gymapi.Transform()
+        camera_position_absolute.p = actor_transform.p + camera_offset
+        camera_position_absolute.r = actor_transform.r
+
+        rigid_body_index = 0
+        segmentation_id = 100
+        self.gym.set_rigid_body_segmentation_id(
+            self.envs[env_id], actor_handle, rigid_body_index, segmentation_id
+        )
+        return h2
 
     def _prepare_reward_function(self):
         """Prepares a list of reward functions, whcih will be called to compute the total reward.
